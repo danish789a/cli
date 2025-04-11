@@ -528,7 +528,7 @@ describe.skipIf(process.env.NETLIFY_TEST_DISABLE_LIVE === 'true').concurrent('co
               const { mkdir, writeFile } = require('node:fs/promises') as typeof import('node:fs/promises')
 
               const generatedFunctionsDir = 'new_functions'
-              // @ts-expect-error
+              // @ts-expect-error TS(2322) FIXME: Type 'string' is not assignable to type 'Functions... Remove this comment to see the full error message
               netlifyConfig.functions.directory = generatedFunctionsDir
 
               await mkdir(generatedFunctionsDir)

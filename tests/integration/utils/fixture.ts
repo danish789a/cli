@@ -107,7 +107,7 @@ export class Fixture {
       cliOptions = getCLIOptions({ apiUrl: this.options.apiUrl, env: execOptions.env })
     }
 
-    // @ts-expect-error we do not care it is readonly here
+    // @ts-expect-error TS(2540) FIXME: Cannot assign to 'cwd' because it is a read-only p... Remove this comment to see the full error message
     cliOptions.cwd = this.directory
 
     if (offline) {

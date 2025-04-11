@@ -33,7 +33,8 @@ const getTable = ({
         // Value
         hideValues ? MASK : variable.value || ' ',
         // Scope
-        scopesColumn && getHumanReadableScopes(variable.scopes),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- FIXME
+        scopesColumn && getHumanReadableScopes(variable.scopes!),
       ].filter(Boolean),
     ),
   )

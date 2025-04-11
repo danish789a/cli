@@ -633,7 +633,7 @@ describe.concurrent('commands/dev-miscellaneous', () => {
         .withEdgeFunction({
           config: { onError: 'bypass', path: '/hello-1' },
           handler: () => {
-            // @ts-expect-error: Intentionally referencing an undefined global
+            // @ts-expect-error TS(2304) FIXME: Cannot find name 'ermThisWillFail'.
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             ermThisWillFail()
 
@@ -644,7 +644,7 @@ describe.concurrent('commands/dev-miscellaneous', () => {
         .withEdgeFunction({
           config: { onError: '/error-page', path: '/hello-2' },
           handler: () => {
-            // @ts-expect-error: Intentionally referencing an undefined global
+            // @ts-expect-error TS(2304) FIXME: Cannot find name 'ermThisWillFail'.
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             ermThisWillFail()
 
@@ -1211,7 +1211,7 @@ describe.concurrent('commands/dev-miscellaneous', () => {
         })
         .withEdgeFunction({
           handler: () => {
-            // @ts-expect-error: We can't import Deno types without polluting the global environment
+            // @ts-expect-error TS(2304) FIXME: Cannot find name 'Deno'.
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             const fromDenoGlobal = Deno.env.toObject() as Record<string, string>
             const fromNetlifyGlobal = Netlify.env.toObject()
@@ -1272,8 +1272,8 @@ describe.concurrent('commands/dev-miscellaneous', () => {
 
   test('should inject the `NETLIFY_DEV` environment variable in the process (legacy environment variables)', async (t) => {
     const externalServerPort = await getAvailablePort()
-    const externalServerPath = path.join(__dirname, '../../utils', 'external-server-cli.js')
-    const command = `node ${externalServerPath} ${externalServerPort.toString()}`
+    const externalServerPath = path.join(__dirname, '../../utils', 'external-server-cli.ts')
+    const command = `tsx ${externalServerPath} ${externalServerPort.toString()}`
 
     await withSiteBuilder(t, async (builder) => {
       const publicDir = 'public'
@@ -1347,8 +1347,8 @@ describe.concurrent('commands/dev-miscellaneous', () => {
     ]
 
     const externalServerPort = await getAvailablePort()
-    const externalServerPath = path.join(__dirname, '../../utils', 'external-server-cli.js')
-    const command = `node ${externalServerPath} ${externalServerPort.toString()}`
+    const externalServerPath = path.join(__dirname, '../../utils', 'external-server-cli.ts')
+    const command = `tsx ${externalServerPath} ${externalServerPort.toString()}`
 
     await withSiteBuilder(t, async (builder) => {
       const publicDir = 'public'
@@ -1395,8 +1395,8 @@ describe.concurrent('commands/dev-miscellaneous', () => {
     const { expect } = t
 
     const externalServerPort = await getAvailablePort()
-    const externalServerPath = path.join(__dirname, '../../utils', 'external-server-cli.js')
-    const command = `node ${externalServerPath} ${externalServerPort.toString()}`
+    const externalServerPath = path.join(__dirname, '../../utils', 'external-server-cli.ts')
+    const command = `tsx ${externalServerPath} ${externalServerPort.toString()}`
 
     await withSiteBuilder(t, async (builder) => {
       await builder

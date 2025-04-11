@@ -1,6 +1,5 @@
 import fs from 'fs'
 
-// @ts-expect-error TS(7016) FIXME: Could not find a declaration file for module 'back... Remove this comment to see the full error message
 import backoff from 'backoff'
 import pMap from 'p-map'
 
