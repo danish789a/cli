@@ -22,6 +22,7 @@ vi.mock('../../../../src/utils/gh-auth.js', () => ({
 vi.mock('@octokit/rest', () => {
   const Client = vi.fn()
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   Client.prototype.rest = {
     users: { getAuthenticated: vi.fn() },
   }
@@ -36,8 +37,8 @@ describe('getGitHubToken', () => {
   let globalConfig: GlobalConfigStore
 
   beforeEach(() => {
-    const values = new Map()
-    // @ts-expect-error mock is not full
+    const values = new Map<string, unknown>()
+    // @ts-expect-error FIXME(ndhoule): mock is not full, make it more realistic
     globalConfig = {
       get: (key) => values.get(key),
       set: (key, value) => {
@@ -51,12 +52,14 @@ describe('getGitHubToken', () => {
       user: 'spongebob',
     })
 
-    // @ts-expect-error TS(2339) FIXME: Property 'mockClear' does not exist on type 'typeo... Remove this comment to see the full error message
+    // @ts-expect-error: Missing from type definition
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     Octokit.mockClear()
   })
 
   test('should create a octokit client with the provided token if the token is valid', async () => {
-    // @ts-expect-error This seems to be an undocumented interface?
+    // @ts-expect-error: Missing from type definition
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     Octokit.prototype.rest.users.getAuthenticated.mockImplementation(() => Promise.resolve({ status: 200 }))
 
     const token = await getGitHubToken({ globalConfig })
@@ -73,7 +76,8 @@ describe('getGitHubToken', () => {
   })
 
   test('should renew the github token when the provided token is not valid', async () => {
-    // @ts-expect-error This seems to be an undocumented interface?
+    // @ts-expect-error: Missing from type definition
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     Octokit.prototype.rest.users.getAuthenticated.mockImplementation(() => {
       const authError = new Error('Bad Credentials')
       // @ts-expect-error TS(2339) FIXME: Property 'status' does not exist on type 'Error'.

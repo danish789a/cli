@@ -15,7 +15,8 @@ export const callCli = async function (
   args: string[] = [],
   execOptions: execa.NodeOptions = {},
   parseJson = false,
-): Promise<any> {
+): // eslint-disable-next-line @typescript-eslint/no-explicit-any
+Promise<any> {
   const { stdout } = await execa.node(cliPath, args, {
     timeout: CLI_TIMEOUT,
     nodeOptions: [],

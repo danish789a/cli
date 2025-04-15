@@ -126,6 +126,7 @@ const retryUpload = (uploadFn, maxRetry) =>
       // user the delay before next reconnection attempt.
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     fibonacciBackoff.on('ready', tryUpload)
 
     fibonacciBackoff.on('fail', () => {

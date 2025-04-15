@@ -6,7 +6,7 @@ test('should return the correct function url for a NetlifyFunction object', () =
   const port = 7331
   const functionName = 'test-function'
 
-  const functionUrl = `http://localhost:${port}/.netlify/functions/${functionName}`
+  const functionUrl = `http://localhost:${port.toString()}/.netlify/functions/${functionName}`
 
   const ntlFunction = new NetlifyFunction({
     name: functionName,

@@ -69,12 +69,16 @@ test('Updates a Rust function when a file is modified', async (t) => {
       await withDevServer(
         {
           cwd: builder.directory,
-          env: { ...execaMock, NETLIFY_EXPERIMENTAL_BUILD_RUST_SOURCE: 'true' },
+          env: {
+            ...(typeof execaMock === 'function' ? {} : execaMock),
+            NETLIFY_EXPERIMENTAL_BUILD_RUST_SOURCE: 'true',
+          },
         },
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         async ({ outputBuffer, port, waitForLogMatching }) => {
           await tryAndLogOutput(async () => {
-            const response = await fetch(`http://localhost:${port}/.netlify/functions/rust-func`).then((res) =>
-              res.text(),
+            const response = await fetch(`http://localhost:${port.toString()}/.netlify/functions/rust-func`).then(
+              (res) => res.text(),
             )
             t.expect(response).toEqual(originalBody)
           }, outputBuffer)
@@ -87,7 +91,7 @@ test('Updates a Rust function when a file is modified', async (t) => {
 
           await waitForLogMatching('Reloaded function rust-func')
 
-          const response = await fetch(`http://localhost:${port}/.netlify/functions/rust-func`).then((res) =>
+          const response = await fetch(`http://localhost:${port.toString()}/.netlify/functions/rust-func`).then((res) =>
             res.text(),
           )
 
@@ -95,8 +99,9 @@ test('Updates a Rust function when a file is modified', async (t) => {
         },
       )
     } finally {
-      // @ts-expect-error TS(2349) FIXME: This expression is not callable.
-      await removeExecaMock()
+      if (typeof removeExecaMock === 'function') {
+        await removeExecaMock()
+      }
     }
   })
 })

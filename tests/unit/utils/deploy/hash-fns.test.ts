@@ -36,9 +36,8 @@ test('Hashes files in a folder', async (t) => {
       const sha = functions[functionPath]
       expect(sha).toBeDefined()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
       expect(fnShaMap).toBeDefined()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-non-null-assertion -- FIXME
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- FIXME
       const functionsObjArray = fnShaMap![sha]
       functionsObjArray.forEach((fileObj) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- FIXME

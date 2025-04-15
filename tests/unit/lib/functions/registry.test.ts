@@ -45,74 +45,91 @@ vi.mock('../../../../src/utils/command-helpers.js', async () => {
   }
 })
 
-test('registry should only pass functions config to zip-it-and-ship-it', async () => {
+test('registry should only pass functions config to zip-it-and-ship-it', async (t) => {
   const projectRoot = '/projectRoot'
   const frameworksAPIPaths = getFrameworksAPIPaths(projectRoot)
   const functionsRegistry = new FunctionsRegistry({
     frameworksAPIPaths,
     projectRoot,
-    // @ts-expect-error TS(2322) FIXME: Type 'string' is not assignable to type 'Plugin'.
-    config: { functions: { '*': {} }, plugins: ['test'] },
+    config: {
+      functions: { '*': {} },
+      // @ts-expect-error TS(2322) FIXME: Type 'string' is not assignable to type 'Plugin'.
+      plugins: ['test'],
+    },
   })
-  // @ts-expect-error TS(2345) FIXME: Argument of type '() => void' is not assignable to... Remove this comment to see the full error message
-  const prepareDirectoryScanStub = vi.spyOn(FunctionsRegistry, 'prepareDirectoryScan').mockImplementation(() => {})
-  // @ts-expect-error TS(2345) FIXME: Argument of type '() => void' is not assignable to... Remove this comment to see the full error message
-  const setupDirectoryWatcherStub = vi.spyOn(functionsRegistry, 'setupDirectoryWatcher').mockImplementation(() => {})
+  const prepareDirectoryScanStub = vi
+    .spyOn(FunctionsRegistry, 'prepareDirectoryScan')
+    .mockImplementation(async () => {})
+  const setupDirectoryWatcherStub = vi
+    .spyOn(functionsRegistry, 'setupDirectoryWatcher')
+    .mockImplementation(async () => {})
   // To verify that only the functions config is passed to zip-it-ship-it
   const listFunctionsStub = vi.spyOn(functionsRegistry, 'listFunctions').mockImplementation(() => Promise.resolve([]))
 
-  // @ts-expect-error TS(2341) FIXME: Property 'projectRoot' is private and only accessi... Remove this comment to see the full error message
-  await functionsRegistry.scan([functionsRegistry.projectRoot])
+  t.onTestFinished(() => {
+    listFunctionsStub.mockRestore()
+    setupDirectoryWatcherStub.mockRestore()
+    prepareDirectoryScanStub.mockRestore()
+  })
+
+  await functionsRegistry.scan([
+    // @ts-expect-error FIXME(ndhoule): We should not be touching this private member in tests
+    functionsRegistry.projectRoot,
+  ])
 
   expect(listFunctionsStub).toHaveBeenCalledOnce()
   expect(listFunctionsStub).toHaveBeenCalledWith(
     expect.anything(),
-    // @ts-expect-error TS(2341) FIXME: Property 'config' is private and only accessible w... Remove this comment to see the full error message
-    expect.objectContaining({ config: functionsRegistry.config.functions }),
+    expect.objectContaining({
+      // @ts-expect-error FIXME(ndhoule): We should not be touching this private member in tests
+      config: functionsRegistry.config.functions,
+    }),
   )
-
-  await listFunctionsStub.mockRestore()
-  await setupDirectoryWatcherStub.mockRestore()
-  await prepareDirectoryScanStub.mockRestore()
 })
 
 describe('the registry handles duplicate functions based on extension precedence', () => {
-  test('where .js takes precedence over .go, and .go over .ts', async () => {
+  test('where .js takes precedence over .go, and .go over .ts', async (t) => {
     const projectRoot = await mkdtemp(join(tmpdir(), 'functions-extension-precedence'))
     const functionsDirectory = join(projectRoot, 'functions')
     await mkdir(functionsDirectory)
 
-    duplicateFunctions.forEach(async (func) => {
+    for (const func of duplicateFunctions) {
       if (func.subDir) {
         const subDir = join(functionsDirectory, func.subDir)
         await mkdir(subDir)
       }
       const file = join(functionsDirectory, func.filename)
       await writeFile(file, func.content)
-    })
+    }
     const functionsRegistry = new FunctionsRegistry({
       projectRoot,
-      // @ts-expect-error TS(2322) FIXME: Type '{}' is not assignable to type 'NormalizedCac... Remove this comment to see the full error message
+      // @ts-expect-error: Not mocking full config interface
       config: {},
       timeouts: { syncFunctions: 1, backgroundFunctions: 1 },
-      // @ts-expect-error TS(2322) FIXME: Type '{ port: number; }' is not assignable to type... Remove this comment to see the full error message
-      settings: { port: 8888 },
+      settings: {
+        // @ts-expect-error TS(2322) FIXME: Type '{ port: number; }' is not assignable to type... Remove this comment to see the full error message
+        port: 8888,
+      },
       frameworksAPIPaths: getFrameworksAPIPaths(projectRoot),
     })
-    // @ts-expect-error TS(2345) FIXME: Argument of type '() => void' is not assignable to... Remove this comment to see the full error message
-    const prepareDirectoryScanStub = vi.spyOn(FunctionsRegistry, 'prepareDirectoryScan').mockImplementation(() => {})
-    // @ts-expect-error TS(2345) FIXME: Argument of type '() => void' is not assignable to... Remove this comment to see the full error message
-    const setupDirectoryWatcherStub = vi.spyOn(functionsRegistry, 'setupDirectoryWatcher').mockImplementation(() => {})
+    const prepareDirectoryScanStub = vi
+      .spyOn(FunctionsRegistry, 'prepareDirectoryScan')
+      .mockImplementation(async () => {})
+    const setupDirectoryWatcherStub = vi
+      .spyOn(functionsRegistry, 'setupDirectoryWatcher')
+      .mockImplementation(async () => {})
+
+    t.onTestFinished(() => {
+      setupDirectoryWatcherStub.mockRestore()
+      prepareDirectoryScanStub.mockRestore()
+    })
 
     await functionsRegistry.scan([functionsDirectory])
-    // @ts-expect-error TS(2341) FIXME: Property 'functions' is private and only accessibl... Remove this comment to see the full error message
+    // @ts-expect-error FIXME(ndhoule): We should not be touching this private member in tests
     const { functions } = functionsRegistry
 
     expect(functions.get('hello')).toHaveProperty('runtime.name', 'js')
     expect(functions.get('hello2')).toHaveProperty('runtime.name', 'go')
-
-    await setupDirectoryWatcherStub.mockRestore()
-    await prepareDirectoryScanStub.mockRestore()
   })
 })
 
@@ -133,7 +150,7 @@ test('should add included_files to watcher', async () => {
     },
   }
 
-  // @ts-expect-error TS(2345) FIXME: Argument of type '{ name: string; config: { functi... Remove this comment to see the full error message
+  // @ts-expect-error FIXME(ndhoule): We should not be touching this private member in tests
   await registry.buildFunctionAndWatchFiles(func)
 
   expect(watchDebounced).toHaveBeenCalledOnce()

@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest'
 import { isFeatureFlagEnabled } from '../../../src/utils/feature-flags.js'
 
 describe('isFeatureFlagEnabled', () => {
-  test('should return true if feature flag is not present', async () => {
+  test('should return true if feature flag is not present', () => {
     const siteInfo = {
       feature_flags: {
         cool_new_feature: true,
@@ -11,13 +11,12 @@ describe('isFeatureFlagEnabled', () => {
       },
     }
 
-    // @ts-expect-error TS(2345) FIXME: Argument of type '{ feature_flags: { cool_new_feat... Remove this comment to see the full error message
     const result = isFeatureFlagEnabled('netlify_feature', siteInfo)
 
     expect(result).toBe(true)
   })
 
-  test('should return true if feature flag is true', async () => {
+  test('should return true if feature flag is true', () => {
     const siteInfo = {
       feature_flags: {
         cool_new_feature: true,
@@ -25,13 +24,12 @@ describe('isFeatureFlagEnabled', () => {
       },
     }
 
-    // @ts-expect-error TS(2345) FIXME: Argument of type '{ feature_flags: { cool_new_feat... Remove this comment to see the full error message
     const result = isFeatureFlagEnabled('cool_new_feature', siteInfo)
 
     expect(result).toBe(true)
   })
 
-  test('should return true if feature flag is a string', async () => {
+  test('should return true if feature flag is a string', () => {
     const siteInfo = {
       feature_flags: {
         cool_new_feature: 'my string',
@@ -39,13 +37,12 @@ describe('isFeatureFlagEnabled', () => {
       },
     }
 
-    // @ts-expect-error TS(2345) FIXME: Argument of type '{ feature_flags: { cool_new_feat... Remove this comment to see the full error message
     const result = isFeatureFlagEnabled('cool_new_feature', siteInfo)
 
     expect(result).toBe(true)
   })
 
-  test('should return true if feature flag is a number', async () => {
+  test('should return true if feature flag is a number', () => {
     const siteInfo = {
       feature_flags: {
         cool_new_feature: 42,
@@ -53,13 +50,16 @@ describe('isFeatureFlagEnabled', () => {
       },
     }
 
-    // @ts-expect-error TS(2345) FIXME: Argument of type '{ feature_flags: { cool_new_feat... Remove this comment to see the full error message
-    const result = isFeatureFlagEnabled('cool_new_feature', siteInfo)
+    const result = isFeatureFlagEnabled(
+      'cool_new_feature',
+      // @ts-expect-error: Intentionally breaking type contract
+      siteInfo,
+    )
 
     expect(result).toBe(true)
   })
 
-  test('should return true if feature flag is an object', async () => {
+  test('should return true if feature flag is an object', () => {
     const siteInfo = {
       feature_flags: {
         cool_new_feature: { key: 'value' },
@@ -67,13 +67,16 @@ describe('isFeatureFlagEnabled', () => {
       },
     }
 
-    // @ts-expect-error TS(2345) FIXME: Argument of type '{ feature_flags: { cool_new_feat... Remove this comment to see the full error message
-    const result = isFeatureFlagEnabled('cool_new_feature', siteInfo)
+    const result = isFeatureFlagEnabled(
+      'cool_new_feature',
+      // @ts-expect-error: Intentionally breaking type contract
+      siteInfo,
+    )
 
     expect(result).toBe(true)
   })
 
-  test('should return false if feature flag is false', async () => {
+  test('should return false if feature flag is false', () => {
     const siteInfo = {
       feature_flags: {
         cool_new_feature: true,
@@ -81,7 +84,6 @@ describe('isFeatureFlagEnabled', () => {
       },
     }
 
-    // @ts-expect-error TS(2345) FIXME: Argument of type '{ feature_flags: { cool_new_feat... Remove this comment to see the full error message
     const result = isFeatureFlagEnabled('amazing_feature', siteInfo)
 
     expect(result).toBe(false)

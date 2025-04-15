@@ -21,13 +21,16 @@ const cookingFixtures = {
 
 describe('getAutocompletion', () => {
   test('should not autocomplete anything when completion is turned off', () => {
+    // @ts-expect-error FIXME(ndhoule): Breaks type safety, I don't think this is a realistic scenario?
     expect(getAutocompletion({}, cookingFixtures)).toBeUndefined()
+    // @ts-expect-error FIXME(ndhoule): Breaks type safety, I don't think this is a realistic scenario?
     expect(getAutocompletion({ complete: false }, cookingFixtures)).toBeUndefined()
+    // @ts-expect-error FIXME(ndhoule): Breaks type safety, I don't think this is a realistic scenario?
     expect(getAutocompletion({ complete: false, words: 2 }, cookingFixtures)).toBeUndefined()
   })
 
   test('should get the correct autocompletion for the base command', () => {
-    const completion = getAutocompletion({ complete: true, words: 1, lastPartial: '' }, cookingFixtures)
+    const completion = getAutocompletion({ complete: true, words: 1, lastPartial: '', line: '' }, cookingFixtures)
     expect(completion).toEqual([
       { name: 'cook', description: 'cooking' },
       { name: 'bake', description: 'baking' },
@@ -35,7 +38,7 @@ describe('getAutocompletion', () => {
   })
 
   test('should get the correct autocompletion for the base command if there is already a word', () => {
-    const completion = getAutocompletion({ complete: true, words: 1, lastPartial: 'ba' }, cookingFixtures)
+    const completion = getAutocompletion({ complete: true, words: 1, lastPartial: 'ba', line: 'ba' }, cookingFixtures)
     expect(completion).toEqual([{ name: 'bake', description: 'baking' }])
   })
 

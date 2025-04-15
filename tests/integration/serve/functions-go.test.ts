@@ -78,13 +78,13 @@ describe.concurrent('serve/functions-go', () => {
         await withDevServer(
           {
             cwd: builder.directory,
-            // @ts-expect-error TS(2322) FIXME: Type '{ NETLIFY_CLI_EXECA_PATH: string; } | (() =>... Remove this comment to see the full error message
-            env: execaMock,
+            env: typeof execaMock === 'function' ? {} : execaMock,
           },
+          // eslint-disable-next-line @typescript-eslint/unbound-method
           async ({ outputBuffer, port, waitForLogMatching }) => {
             await tryAndLogOutput(async () => {
-              const response = await fetch(`http://localhost:${port}/.netlify/functions/go-func`).then((res) =>
-                res.text(),
+              const response = await fetch(`http://localhost:${port.toString()}/.netlify/functions/go-func`).then(
+                (res) => res.text(),
               )
               t.expect(response).toEqual(originalBody)
             }, outputBuffer)
@@ -97,7 +97,7 @@ describe.concurrent('serve/functions-go', () => {
 
             await waitForLogMatching('Reloaded function go-func')
 
-            const response = await fetch(`http://localhost:${port}/.netlify/functions/go-func`).then((res) =>
+            const response = await fetch(`http://localhost:${port.toString()}/.netlify/functions/go-func`).then((res) =>
               res.text(),
             )
 
@@ -105,8 +105,9 @@ describe.concurrent('serve/functions-go', () => {
           },
         )
       } finally {
-        // @ts-expect-error TS(2349) FIXME: This expression is not callable.
-        await removeExecaMock()
+        if (typeof removeExecaMock === 'function') {
+          await removeExecaMock()
+        }
       }
     })
   })
@@ -168,11 +169,10 @@ describe.concurrent('serve/functions-go', () => {
         await withDevServer(
           {
             cwd: builder.directory,
-            // @ts-expect-error TS(2322) FIXME: Type '{ NETLIFY_CLI_EXECA_PATH: string; } | (() =>... Remove this comment to see the full error message
-            env: execaMock,
+            env: typeof execaMock === 'function' ? {} : execaMock,
           },
           async ({ port }) => {
-            const response = await fetch(`http://localhost:${port}/.netlify/functions/go-scheduled-function`)
+            const response = await fetch(`http://localhost:${port.toString()}/.netlify/functions/go-scheduled-function`)
             const responseBody = await response.text()
             t.expect(responseBody).toMatch(/You performed an HTTP request/)
             t.expect(responseBody).toMatch(/Your function returned `body`/)
@@ -181,8 +181,9 @@ describe.concurrent('serve/functions-go', () => {
           },
         )
       } finally {
-        // @ts-expect-error TS(2349) FIXME: This expression is not callable.
-        await removeExecaMock()
+        if (typeof removeExecaMock === 'function') {
+          await removeExecaMock()
+        }
       }
     })
   })
