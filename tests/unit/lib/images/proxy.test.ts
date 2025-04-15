@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 
-import { parseAllRemoteImages, transformImageParams } from '../../../../dist/lib/images/proxy.js'
+import { parseAllRemoteImages, transformImageParams } from '../../../../src/lib/images/proxy.js'
 
 test('should parse all remote images correctly', () => {
   const config = {
