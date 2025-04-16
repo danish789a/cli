@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DYNA 캐릭터 사운드콘</title>
+  <style>
+    body {
+      background-color: #f9f9f9;
+      text-align: center;
+      padding: 50px;
+      font-family: 'Arial', sans-serif;
+    }
+    .dyna-container {
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+    }
+    .label {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="dyna-container" onclick="playSound()">
+    <img src="/mnt/data/368771505574113286.gif" alt="DYNA 캐릭터" width="200">
+    <div class="label">클릭하면 DYNA가 인사해요 👋</div>
+  </div>
+
+  <audio id="dynaSound" preload="auto">
+    <source src="/mnt/data/ttsmaker-file-2025-4-16-16-7-54.mp3" type="audio/mpeg">
+    브라우저에서 오디오를 지원하지 않습니다.
+  </audio>
+
+  <script>
+    function playSound() {
+      const sound = document.getElementById("dynaSound");
+      sound.currentTime = 0;
+      sound.play();
+    }
+  </script>
+</body>
+</html>
